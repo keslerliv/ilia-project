@@ -19,12 +19,16 @@ func LoadRoutes() http.Handler {
 		AllowCredentials: true,
 	}))
 
-	router.Route("/api/v1", func(r chi.Router) {
+	router.Route("/", func(r chi.Router) {
 		r.Use(middlewares.Auth)
 
-		r.Route("/wallet", func(r chi.Router) {
+		r.Route("/transactions", func(r chi.Router) {
+			r.Get("/", handlers.GetTransactions)
+			r.Post("/", handlers.PostTransaction)
+		})
+
+		r.Route("/balance", func(r chi.Router) {
 			r.Get("/", handlers.GetBalance)
-			r.Post("/", handlers.PostValue)
 		})
 	})
 

@@ -8,9 +8,9 @@ import (
 	"github.com/keslerliv/wallet/internal/models"
 )
 
-func PostValue(w http.ResponseWriter, r *http.Request) {
+func PostTransaction(w http.ResponseWriter, r *http.Request) {
 	user_id := r.Context().Value(entities.UIDKey).(int64)
-	var payload entities.PostBallancePayload
+	var payload entities.PostTransactionPayload
 
 	// Decode request body
 	err := json.NewDecoder(r.Body).Decode(&payload)
@@ -19,15 +19,27 @@ func PostValue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ballance, err := models.PostValue(payload.Action, payload.Value, user_id)
+	transaction, err := models.PostTransaction(payload.Type, payload.Amout, user_id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	response := map[string]any{"new_ballance": float64(ballance) / 100}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(transaction)
+}
+
+func GetTransactions(w http.ResponseWriter, r *http.Request) {
+	user_id := r.Context().Value(entities.UIDKey).(int64)
+
+	transactions, err := models.GetTransactions(user_id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(transactions)
 }
 
 func GetBalance(w http.ResponseWriter, r *http.Request) {
@@ -39,7 +51,7 @@ func GetBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := map[string]any{"ballance": float64(ballance) / 100}
+	response := map[string]any{"amount": ballance}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }

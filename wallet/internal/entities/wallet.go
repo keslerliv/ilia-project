@@ -22,8 +22,16 @@ type Wallet struct {
 	Balance int `json:"balance"`
 }
 
+type Transaction struct {
+	ID     int64  `json:"id"`
+	UserID int64  `json:"user_id"`
+	Amount int64  `json:"amount"`
+	Type   string `json:"type"`
+}
+
 // Request wallet model
-type PostBallancePayload struct {
-	Action string `json:"action"`
-	Value  int64  `json:"value"`
+type PostTransactionPayload struct {
+	UserID int64  `json:"user_id"`
+	Type   string `json:"type"`
+	Amout  int64  `json:"amount"`
 }

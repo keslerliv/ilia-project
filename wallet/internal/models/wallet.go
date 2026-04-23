@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 
+	"github.com/keslerliv/wallet/internal/entities"
 	"github.com/keslerliv/wallet/pkg/db"
 )
 
@@ -22,16 +23,16 @@ func CreateWallet(uid int) (int64, error) {
 	return id, nil
 }
 
-func PostValue(action string, value int64, uid int64) (int64, error) {
+func PostTransaction(action string, value int64, uid int64) (*entities.Transaction, error) {
 	conn, err := db.OpenConnection()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	defer conn.Close()
 
 	tx, err := conn.Begin()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -39,7 +40,7 @@ func PostValue(action string, value int64, uid int64) (int64, error) {
 	var currentBalance int64
 	err = tx.QueryRow(`SELECT balance FROM wallets WHERE user_id = $1 FOR UPDATE`, uid).Scan(&currentBalance)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// Check duplicate transaction in last 5 minutes
@@ -52,70 +53,72 @@ func PostValue(action string, value int64, uid int64) (int64, error) {
 			  AND created_at >= NOW() - INTERVAL '5 minutes')
 	`, uid, value, action).Scan(&exists)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	if exists {
-		return 0, fmt.Errorf("duplicate transaction detected")
+		return nil, fmt.Errorf("duplicate transaction detected")
 	}
 
 	// Calculate new balance
 	var newBalance int64
 	switch action {
-	case "withdraw":
+	case "CREDIT":
 		newBalance = currentBalance - value
 		if newBalance < 0 {
-			return 0, fmt.Errorf("insufficient balance")
+			return nil, fmt.Errorf("insufficient balance")
 		}
-	case "deposit":
+	case "DEBIT":
 		newBalance = currentBalance + value
 	default:
-		return 0, fmt.Errorf("invalid action")
+		return nil, fmt.Errorf("invalid type")
 	}
 
 	// Update wallet balance
 	_, err = tx.Exec(`UPDATE wallets SET balance = $1 WHERE user_id = $2`, newBalance, uid)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// Register transaction
-	_, err = tx.Exec(`INSERT INTO wallet_transactions (user_id, amount, action) VALUES ($1, $2, $3)`, uid, value, action)
+	var transaction entities.Transaction
+	err = tx.QueryRow(
+		`INSERT INTO wallet_transactions (user_id, amount, action) VALUES ($1, $2, $3) RETURNING id, user_id, amount, action`,
+		uid, value, action,
+	).Scan(&transaction.ID, &transaction.UserID, &transaction.Amount, &transaction.Type)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	// Commit if everything is successful
 	if err := tx.Commit(); err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return newBalance, nil
+	return &transaction, nil
 }
 
-// func PostValue(action string, value int, uid int64) (int64, error) {
-// 	conn, err := db.OpenConnection()
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	defer conn.Close()
+func GetTransactions(uid int64) ([]entities.Transaction, error) {
+	conn, err := db.OpenConnection()
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
 
-// 	var balance int64
+	rows, err := conn.Query("SELECT id, user_id, amount, action FROM wallet_transactions WHERE user_id = $1", uid)
+	var transactions []entities.Transaction
 
-// 	if action == "withdraw" {
-// 		err = conn.QueryRow("UPDATE wallets SET balance = balance - $1 WHERE user_id = $2 RETURNING balance", value, uid).Scan(&balance)
-// 	} else if action == "deposit" {
-// 		err = conn.QueryRow("UPDATE wallets SET balance = balance + $1 WHERE user_id = $2 RETURNING balance", value, uid).Scan(&balance)
-// 	} else {
-// 		return 0, fmt.Errorf("invalid action: %s", action)
-// 	}
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return 0, err
-// 	}
+	for rows.Next() {
+		var t entities.Transaction
+		err := rows.Scan(&t.ID, &t.UserID, &t.Amount, &t.Type)
+		if err != nil {
+			return nil, err
+		}
+		transactions = append(transactions, t)
+	}
 
-// 	return balance, nil
-// }
+	return transactions, nil
+}
 
 func GetBalance(uid int64) (int64, error) {
 	conn, err := db.OpenConnection()
