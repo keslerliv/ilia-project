@@ -13,13 +13,12 @@ import (
 
 func OpenConnection() (*sql.DB, error) {
 	sc := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Env.DBHost,
 		config.Env.DBPort,
 		config.Env.DBUser,
 		config.Env.DBPassword,
 		config.Env.DBName,
-		config.Env.DBSSLMode,
 	)
 
 	conn, err := sql.Open("postgres", sc)
@@ -47,6 +46,7 @@ func MakeMigration(conn *sql.DB) error {
 		return err
 	}
 
+	m.Force(0)
 	err = m.Up()
 	if err != nil && err.Error() != "no change" {
 		log.Fatal(err)

@@ -1,21 +1,29 @@
 package entities
 
-import "github.com/google/uuid"
+import (
+	"encoding/json"
+
+	"github.com/golang-jwt/jwt/v5"
+)
+
+type contextKey string
+
+const UIDKey contextKey = "user_id"
+
+type Claims struct {
+	UserID json.Number `json:"user_id"`
+	jwt.RegisteredClaims
+}
 
 // Main wallet model
 type Wallet struct {
-	ID     string `json:"id"`
-	UserID string `json:"user_id"`
-}
-
-func (a *Wallet) NewWallet(uid string) *Wallet {
-	return &Wallet{
-		ID:     uuid.New().String(),
-		UserID: uid,
-	}
+	ID      int `json:"id"`
+	UserID  int `json:"user_id"`
+	Balance int `json:"balance"`
 }
 
 // Request wallet model
-type CreateWalletPayload struct {
-	UserID string `json:"user_id"`
+type PostBallancePayload struct {
+	Action string `json:"action"`
+	Value  int64  `json:"value"`
 }

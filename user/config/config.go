@@ -1,5 +1,7 @@
 package config
 
+import "os"
+
 type AppConfig struct {
 	Port string
 
@@ -20,22 +22,21 @@ var Env AppConfig
 
 func LoadConfig() *AppConfig {
 	// Server
-	Env.Port = "8081"
+	Env.Port = os.Getenv("USER_APP_PORT")
 
 	// Database
-	Env.DBHost = "postgres"
-	Env.DBPort = "5432"
-	Env.DBUser = "postgres"
-	Env.DBPassword = "postgres"
-	Env.DBName = "ilia"
-	Env.DBSSLMode = "disable"
+	Env.DBHost = os.Getenv("USER_DB_HOST")
+	Env.DBPort = os.Getenv("USER_DB_PORT")
+	Env.DBUser = os.Getenv("USER_DB_USER")
+	Env.DBPassword = os.Getenv("USER_DB_PASSWORD")
+	Env.DBName = os.Getenv("USER_DB_NAME")
 
 	// Kafka
-	Env.KafkaBrokers = []string{"localhost:9092"}
-	Env.KafkaTopic = "transaction"
+	Env.KafkaBrokers = []string{os.Getenv("KAFKA_BROKERS")}
+	Env.KafkaTopic = os.Getenv("KAFKA_TOPIC")
 
 	// JWT
-	Env.JWTSecret = "mysecretkey"
+	Env.JWTSecret = os.Getenv("JWT_SECRET")
 
 	return &Env
 }

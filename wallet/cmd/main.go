@@ -1,14 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/IBM/sarama"
 	"github.com/keslerliv/wallet/config"
+	"github.com/keslerliv/wallet/internal/models"
 	"github.com/keslerliv/wallet/internal/routes"
 	"github.com/keslerliv/wallet/internal/services/kafka"
 	"github.com/keslerliv/wallet/pkg/db"
@@ -25,10 +28,7 @@ func main() {
 	defer conn.Close()
 
 	// Make initial database migration
-	err = db.MakeMigration(conn)
-	if err != nil {
-		panic(err)
-	}
+	db.MakeMigration(conn)
 
 	// Call routine to listen for Kafka messages
 	// This function will listen for new users and create the wallet
@@ -47,7 +47,7 @@ func ListenMessages() {
 		panic(err)
 	}
 
-	consumer, err := user.ConsumePartition(config.Env.KafkaTopic, 0, sarama.OffsetOldest)
+	consumer, err := user.ConsumePartition(config.Env.KafkaTopic, 0, sarama.OffsetNewest)
 	if err != nil {
 		panic(err)
 	}
@@ -65,8 +65,7 @@ func ListenMessages() {
 				continue
 			case msg := <-consumer.Messages():
 				fmt.Printf("Received message: %s\n", msg.Value)
-				order := string(msg.Value)
-				fmt.Printf("Brewing order: %s\n", order)
+				ProcessMessage(msg)
 			case <-sigchan:
 				fmt.Println("Shutting down...")
 				close(doneCh)
@@ -74,4 +73,27 @@ func ListenMessages() {
 			}
 		}
 	}()
+}
+
+func ProcessMessage(msg *sarama.ConsumerMessage) {
+	var payload map[string]interface{}
+	message := strings.NewReader(string(msg.Value))
+
+	err := json.NewDecoder(message).Decode(&payload)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Create new user wallet
+	if payload["action"] == "new_user" {
+		walletId, err := models.CreateWallet(int(payload["user_id"].(float64)))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Printf("New wallet %v created for user %v", walletId, payload["user_id"])
+		return
+	}
 }

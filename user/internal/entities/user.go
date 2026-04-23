@@ -4,14 +4,13 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
 	"github.com/keslerliv/user/config"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // Main user model
 type User struct {
-	ID       string `json:"id"`
+	ID       int64  `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -23,7 +22,6 @@ func (a *User) NewUser(email, password string) (*User, error) {
 	}
 
 	return &User{
-		ID:       uuid.New().String(),
 		Email:    email,
 		Password: string(encp),
 	}, nil
