@@ -1,4 +1,4 @@
-module github.com/keslerliv/wallet
+module github.com/keslerliv/ilia-project/wallet
 
 go 1.25.0
 

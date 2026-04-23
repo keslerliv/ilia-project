@@ -1,4 +1,4 @@
-module github.com/keslerliv/user
+module github.com/keslerliv/ilia-project/user
 
 go 1.25.0
 

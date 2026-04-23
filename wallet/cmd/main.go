@@ -10,11 +10,11 @@ import (
 	"syscall"
 
 	"github.com/IBM/sarama"
-	"github.com/keslerliv/wallet/config"
-	"github.com/keslerliv/wallet/internal/models"
-	"github.com/keslerliv/wallet/internal/routes"
-	"github.com/keslerliv/wallet/internal/services/kafka"
-	"github.com/keslerliv/wallet/pkg/db"
+	"github.com/keslerliv/ilia-project/wallet/config"
+	"github.com/keslerliv/ilia-project/wallet/internal/models"
+	"github.com/keslerliv/ilia-project/wallet/internal/routes"
+	"github.com/keslerliv/ilia-project/wallet/internal/services/kafka"
+	"github.com/keslerliv/ilia-project/wallet/pkg/db"
 )
 
 func main() {

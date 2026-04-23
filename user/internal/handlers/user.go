@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/keslerliv/user/internal/entities"
-	"github.com/keslerliv/user/internal/models"
-	"github.com/keslerliv/user/internal/services/kafka"
+	"github.com/keslerliv/ilia-project/user/internal/entities"
+	"github.com/keslerliv/ilia-project/user/internal/models"
+	"github.com/keslerliv/ilia-project/user/internal/services/kafka"
 )
 
 func PostUser(w http.ResponseWriter, r *http.Request) {

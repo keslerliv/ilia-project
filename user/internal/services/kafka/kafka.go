@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/IBM/sarama"
-	"github.com/keslerliv/user/config"
+	"github.com/keslerliv/ilia-project/user/config"
 )
 
 func ConnectProducer(brokers []string) (sarama.SyncProducer, error) {

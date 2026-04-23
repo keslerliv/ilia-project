@@ -3,8 +3,8 @@ package models
 import (
 	"fmt"
 
-	"github.com/keslerliv/wallet/internal/entities"
-	"github.com/keslerliv/wallet/pkg/db"
+	"github.com/keslerliv/ilia-project/wallet/internal/entities"
+	"github.com/keslerliv/ilia-project/wallet/pkg/db"
 )
 
 func CreateWallet(uid int) (int64, error) {

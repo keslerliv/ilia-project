@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/keslerliv/user/config"
-	"github.com/keslerliv/user/internal/entities"
+	"github.com/keslerliv/ilia-project/user/config"
+	"github.com/keslerliv/ilia-project/user/internal/entities"
 )
 
 func Auth(next http.Handler) http.Handler {

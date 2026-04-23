@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/keslerliv/wallet/internal/entities"
-	"github.com/keslerliv/wallet/internal/models"
+	"github.com/keslerliv/ilia-project/wallet/internal/entities"
+	"github.com/keslerliv/ilia-project/wallet/internal/models"
 )
 
 func PostTransaction(w http.ResponseWriter, r *http.Request) {

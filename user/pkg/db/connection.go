@@ -8,7 +8,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/keslerliv/user/config"
+	"github.com/keslerliv/ilia-project/user/config"
 )
 
 func OpenConnection() (*sql.DB, error) {

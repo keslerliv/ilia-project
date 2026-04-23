@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/keslerliv/user/config"
-	"github.com/keslerliv/user/internal/routes"
-	"github.com/keslerliv/user/pkg/db"
+	"github.com/keslerliv/ilia-project/user/config"
+	"github.com/keslerliv/ilia-project/user/internal/routes"
+	"github.com/keslerliv/ilia-project/user/pkg/db"
 )
 
 func main() {

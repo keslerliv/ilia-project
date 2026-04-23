@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/keslerliv/wallet/internal/handlers"
-	"github.com/keslerliv/wallet/internal/middlewares"
+	"github.com/keslerliv/ilia-project/wallet/internal/handlers"
+	"github.com/keslerliv/ilia-project/wallet/internal/middlewares"
 )
 
 func LoadRoutes() http.Handler {

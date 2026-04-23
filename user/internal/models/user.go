@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/keslerliv/user/internal/entities"
-	"github.com/keslerliv/user/pkg/db"
+	"github.com/keslerliv/ilia-project/user/internal/entities"
+	"github.com/keslerliv/ilia-project/user/pkg/db"
 )
 
 func PostUser(user *entities.User) (*entities.ResponseUserData, error) {
