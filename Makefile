@@ -17,8 +17,3 @@ build:
 
 ps:
 	docker-compose ps
-
-create-message:
-	curl -X POST http://localhost:8080/place-order \
-	-H "Content-Type: application/json" \
-	-d '{ "customer_name": "Hello Kafka last", "coffee_type": "coffe Super" }'

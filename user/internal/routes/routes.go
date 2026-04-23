@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/keslerliv/user/internal/handlers"
+	"github.com/keslerliv/user/internal/middlewares"
 )
 
 func LoadRoutes() http.Handler {
@@ -18,10 +19,23 @@ func LoadRoutes() http.Handler {
 		AllowCredentials: true,
 	}))
 
-	router.Route("/api/v1", func(r chi.Router) {
+	router.Route("/", func(r chi.Router) {
+
+		r.Route("/users", func(r chi.Router) {
+			r.Post("/", handlers.PostUser)
+
+			r.Group(func(r chi.Router) {
+				r.Use(middlewares.Auth)
+
+				r.Get("/", handlers.GetUsers)
+				r.Get("/{id}", handlers.GetUser)
+				r.Patch("/{id}", handlers.PatchUser)
+				r.Delete("/{id}", handlers.DeleteUser)
+			})
+		})
+
 		r.Route("/auth", func(r chi.Router) {
-			r.Post("/register", handlers.CreateUser)
-			r.Post("/login", handlers.Login)
+			r.Post("/", handlers.Auth)
 		})
 	})
 

@@ -63,12 +63,12 @@ func PostTransaction(action string, value int64, uid int64) (*entities.Transacti
 	// Calculate new balance
 	var newBalance int64
 	switch action {
-	case "CREDIT":
+	case "DEBIT":
 		newBalance = currentBalance - value
 		if newBalance < 0 {
 			return nil, fmt.Errorf("insufficient balance")
 		}
-	case "DEBIT":
+	case "CREDIT":
 		newBalance = currentBalance + value
 	default:
 		return nil, fmt.Errorf("invalid type")
