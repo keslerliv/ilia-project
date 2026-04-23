@@ -19,8 +19,9 @@ func LoadRoutes() http.Handler {
 	}))
 
 	router.Route("/api/v1", func(r chi.Router) {
-		r.Route("/user", func(r chi.Router) {
-			r.Post("/", handlers.CreateUser)
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/register", handlers.CreateUser)
+			r.Post("/login", handlers.Login)
 		})
 	})
 

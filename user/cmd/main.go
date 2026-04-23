@@ -12,6 +12,8 @@ import (
 func main() {
 	config.LoadConfig()
 
+	fmt.Println("started")
+
 	// Start database connection
 	conn, err := db.OpenConnection()
 	if err != nil {
@@ -20,11 +22,9 @@ func main() {
 	defer conn.Close()
 
 	// Make initial database migration
-	err = db.MakeMigration(conn)
-	if err != nil {
-		panic(err)
-	}
+	db.MakeMigration(conn)
 
+	// Start routes
 	r := routes.LoadRoutes()
 
 	// Start server

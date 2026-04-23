@@ -33,6 +33,9 @@ services:
     build: ./wallet
     ports:
       - "8080:8080"
+    volumes:
+      - ./wallet:/app
+    working_dir: /app
     depends_on:
       - kafka
     environment:
@@ -42,10 +45,26 @@ services:
     build: ./user
     ports:
       - "8081:8081"
+    volumes:
+      - ./user:/app
+    working_dir: /app
     depends_on:
       - kafka
     environment:
       - KAFKA_BROKER=kafka:9092
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ilia
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   kafka_data:
+  postgres_data:

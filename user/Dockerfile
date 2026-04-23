@@ -1,20 +1,10 @@
-# Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25-alpine
+
+RUN apk add --no-cache git bash curl
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
+# instala air
+RUN go install github.com/air-verse/air@latest
 
-COPY . .
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app
-
-# Final image
-FROM alpine:latest
-
-WORKDIR /root/
-
-COPY --from=builder /app/app .
-
-CMD ["./app"]
+CMD ["air"]

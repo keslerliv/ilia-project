@@ -21,7 +21,7 @@ func ConnectProducer(brokers []string) (sarama.SyncProducer, error) {
 
 }
 
-func PushOrderToQueue(topic string, orderBytes []byte) error {
+func PushOrderToQueue(orderBytes []byte) error {
 	user, err := ConnectProducer(config.Env.KafkaBrokers)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func PushOrderToQueue(topic string, orderBytes []byte) error {
 
 	// Create a new message to send to the Kafka topic
 	msg := &sarama.ProducerMessage{
-		Topic: topic,
+		Topic: config.Env.KafkaTopic,
 		Value: sarama.StringEncoder(orderBytes),
 	}
 
